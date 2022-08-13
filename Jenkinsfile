@@ -26,6 +26,11 @@ pipeline {
                 }
             }
         }
+        stage('Manual Approval') {
+            steps {
+                input message: 'Lanjut ke tahap Deploy?'
+            }
+        }        
         stage('Deploy') {
             agent {
                 docker {
