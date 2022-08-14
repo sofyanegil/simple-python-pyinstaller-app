@@ -1,5 +1,8 @@
 pipeline {
     agent none
+    options {
+        skipStagesAfterUnstable()
+    }
     stages {
         stage('Build') {
             agent {
@@ -9,6 +12,7 @@ pipeline {
             }
             steps {
                 sh 'python -m py_compile sources/add2vals.py sources/calc.py'
+                stash(name: 'compiled-results', includes: 'sources/*.py*')                
             }
         }
         stage('Test') {
@@ -42,7 +46,7 @@ pipeline {
                     unstash(name: 'compiled-results')
                     sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
                 }
-                sleep(time:1 , unit: 'MINUTES')
+            sleep(time:1 , unit: 'MINUTES')
             }
             post {
                 success {
